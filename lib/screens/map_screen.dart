@@ -12,7 +12,9 @@ const mapboxAccessToken = 'pk.eyJ1IjoiamRvbWluZ3VlejI1IiwiYSI6ImNsZnUzOG5odzA2dW
 LatLng myPosition = LatLng(-29.952047, -71.3502365);
 
 class MapScreeen extends StatefulWidget {
-  const MapScreeen({Key? key}) : super(key: key);
+
+  final String profilePictureUrl;
+  const MapScreeen({Key? key, required this.profilePictureUrl}) : super(key: key);
 
   @override
   _MapScreenState createState() => _MapScreenState();
@@ -202,10 +204,37 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
               Marker(
                 point: myPosition,
                 builder: (context) {
-                  return const Icon(
-                    Icons.person_pin,
-                    color: Colors.blueAccent,
-                    size: 40,
+                  return GestureDetector(
+                    onTap: () {
+                      // Aquí se puede agregar la acción al hacer clic en el marcador azul
+                    },
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        //const Icon(
+                        //  Icons.person_pin,
+                        //  color: Colors.blueAccent,
+                        //  size: 40,
+                        //),
+                        Transform.translate(
+                          offset: const Offset(0, 0),
+                          child: ClipOval(
+                            child: Container(
+                              width: 80, // Aumenta el tamaño de la foto de perfil aquí
+                              height: 80, // Aumenta el tamaño de la foto de perfil aquí
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
+                              child: Image.network(
+                                widget.profilePictureUrl,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),

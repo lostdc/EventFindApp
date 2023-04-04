@@ -2,7 +2,15 @@ import 'package:flutter/material.dart';
 import 'screens/map_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key, required String userName}) : super(key: key);
+
+  final String userName;
+  final String profilePictureUrl;
+
+  const HomeScreen({
+    Key? key,
+    required this.userName,
+    required this.profilePictureUrl,
+  }) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -20,10 +28,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('${widget.userName}'),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            //MapScreeen(profilePictureUrl: widget.profilePictureUrl),
             Align(
               alignment: Alignment.topCenter,
               child: Padding(
@@ -34,8 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            const Expanded(
-              child: MapScreeen(),
+            Expanded(
+              child: MapScreeen(profilePictureUrl: widget.profilePictureUrl),
             ),
             Align(
               alignment: Alignment.bottomCenter,
