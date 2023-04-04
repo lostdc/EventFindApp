@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
-//import 'auth.dart'; // Importar el archivo de autenticación
+import 'auth.dart'; // Importar el archivo de autenticación
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -12,13 +12,13 @@ class _LoginScreenState extends State<LoginScreen> {
   // Crear una función asíncrona para manejar el inicio de sesión con Facebook
    // Marcar esta función como 'async'
 Future<void> _handleLoginButton() async {
-  //String userName = await signInWithFacebook(); // Llamar a la función signInWithFacebook
-  const String userName = 'hola';
+  String userName = await signInWithFacebook(); // Llamar a la función signInWithFacebook
+  //const String userName = 'hola';
   // Verifica si se obtuvo un nombre de usuario válido antes de navegar a la pantalla de inicio
-  //if (userName.isNotEmpty) {
+  if (userName.isNotEmpty) {
     //Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(userName: userName)));
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen(userName: userName)));
-  //}
+    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(userName: userName)));
+  }
 }
 
   @override

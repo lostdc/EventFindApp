@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
 import 'screens/map_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key, required String userName}) : super(key: key);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,7 +30,7 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 16),
                 child: Image.asset(
                   'assets/logo_eventfind.png',
-                   scale: 3.5,
+                  scale: 3.5,
                 ),
               ),
             ),
@@ -25,10 +39,7 @@ class HomeScreen extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: _buildBottomNavigationBar(),
-              ),
+              child: _buildBottomNavigationBar(),
             ),
           ],
         ),
@@ -42,29 +53,26 @@ class HomeScreen extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
+          backgroundColor: Color.fromARGB(255, 70, 43, 226),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.search),
           label: 'Search',
+          backgroundColor: Colors.green,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.add_box),
-          label: 'Add',
+          icon: Icon(Icons.notifications),
+          label: 'Notifications',
+          backgroundColor: Colors.blue,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.favorite),
-          label: 'Favorites',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
+          icon: Icon(Icons.account_circle),
           label: 'Profile',
+          backgroundColor: Colors.yellow,
         ),
       ],
-      onTap: (int index) {
-        // Aquí es donde puedes agregar la funcionalidad onPress para cada botón.
-      },
-      unselectedItemColor: Colors.grey, // Establece el color de los íconos no seleccionados
-      selectedItemColor: Colors.blue, // Establece el color de los íconos seleccionados
+      currentIndex: _selectedIndex,
+      onTap: _onItemTapped,
     );
   }
 }

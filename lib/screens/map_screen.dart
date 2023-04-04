@@ -3,8 +3,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'dart:async';
-
 import 'package:event_find/models/map_marker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 const mapboxAccessToken = 'pk.eyJ1IjoiamRvbWluZ3VlejI1IiwiYSI6ImNsZnUzOG5odzA2dWozZG80eWg3dDJsYWoifQ.Yw-vXDw2_voeUEBga0HiZA';
 
@@ -45,6 +46,17 @@ class _MapScreenState extends State<MapScreeen> {
 
 List<Marker> _buildMarkers(List<MapMarker> markers) {
   return markers.map((marker) {
+    String newImagePath = marker.imagen!.replaceAll(
+        'assets/eventos/30-03-2023/images/eventos_4_iv_region_de_coquimbo/',
+        'event_find/eventos/passline/imagenes/eventos_4_iv_region_de_coquimbo/');
+    
+    String imageUrl =
+        'https://firebasestorage.googleapis.com/v0/b/eventfind-ad0e3.appspot.com/o/${Uri.encodeComponent(newImagePath)}?alt=media';
+
+    String titulo = marker.titulo ?? '';
+    String fecha = marker.fecha ?? '';
+    String tituloConFecha = titulo + ' - ' + fecha;
+
     return Marker(
       point: marker.location!,
       builder: (context) {
@@ -55,14 +67,38 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  title: Text(marker.titulo ?? ''),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset("${marker.imagen}"),
-                      const SizedBox(height: 10),
-                      Text(marker.detalleEvento ?? ''),
-                    ],
+                  title: Text(tituloConFecha),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          placeholder: (context, url) =>
+                              const CircularProgressIndicator(),
+                          errorWidget: (context, url, error) => Icon(Icons.error),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(marker.detalleEvento ?? ''),
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () async {
+                            if (await canLaunchUrl(Uri.parse(marker.eventoUrl ?? ''))) {
+                              await launchUrl(Uri.parse(marker.eventoUrl ?? ''));
+                            } else {
+                              throw 'Could not launch ${marker.eventoUrl}';
+                            }
+                          },
+                          child: Text(
+                            marker.eventoUrl ?? '',
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   actions: [
                     TextButton(
@@ -76,18 +112,46 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
               },
             );
           },
-          child: const Icon(
-            Icons.location_on,
-            color: Colors.red,
-            size: 40,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Transform.translate(
+                offset: const Offset(-15, -8), // Ajusta los valores para mover el marcador en los ejes X e Y
+                child: const SizedBox(
+                  width: 100, // Ajusta el ancho del área de toque aquí
+                  height: 100, // Ajusta el alto del área de toque aquí
+                  child: Icon(
+                    Icons.location_on,
+                    color: Colors.red,
+                    size: 60, // Aumentamos el tamaño del ícono aquí
+                  ),
+                ),
+              ),
+              Transform.translate(
+                offset: const Offset(0, 0), // Ajustamos el centrado del círculo aquí
+                child: Container(
+                  width: 100, // Aumentamos el tamaño del círculo aquí
+                  height: 100, // Aumentamos el tamaño del círculo aquí
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                  ),
+                  child: Center(
+                    child: Image.asset(
+                      'assets/logo_passline.png', // Reemplaza esto con la ruta de tu logo en la carpeta assets
+                      width: 65, // Aumentamos el tamaño del logo aquí
+                      height: 65, // Aumentamos el tamaño del logo aquí
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },
     );
   }).toList();
 }
-
-  
 
   @override
   void dispose() {
@@ -107,7 +171,6 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
         return;
       }
     }
-
     permissionGranted = await locationController.hasPermission();
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await locationController.requestPermission();
@@ -115,7 +178,6 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
         return;
       }
     }
-
     locationData = await locationController.getLocation();
     setState(() {
       myPosition = LatLng(locationData.latitude!, locationData.longitude!);
@@ -152,9 +214,6 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
           )
         ],
       ),
-
-
-      
     );
   }
 }

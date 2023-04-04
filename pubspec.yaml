@@ -35,6 +35,8 @@ dependencies:
   http: ^0.13.5
   flutter_map: ^3.1.0
   location: ^4.3.0
+  url_launcher: ^6.0.9
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -45,6 +47,7 @@ dependencies:
   firebase_core: "^2.9.0"
   firebase_storage: "^11.1.0"
   flutterfire_cli: "^0.2.7"
+  cached_network_image: ^3.2.0
 
 
   
@@ -76,10 +79,10 @@ flutter:
   assets:
     - assets/
     - assets/eventos/
-    - assets/data.json
+    # assets/data.json
     - assets/eventos/30-03-2023/
-    - assets/eventos/30-03-2023/images/
-    - assets/eventos/30-03-2023/images/eventos_4_iv_region_de_coquimbo/
+    # assets/eventos/30-03-2023/images/
+    #- assets/eventos/30-03-2023/images/eventos_4_iv_region_de_coquimbo/
       
  
 
