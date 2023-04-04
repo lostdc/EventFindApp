@@ -222,7 +222,7 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
                             child: Container(
                               width: 80, // Aumenta el tamaño de la foto de perfil aquí
                               height: 80, // Aumenta el tamaño de la foto de perfil aquí
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.white,
                               ),
@@ -246,3 +246,4 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
     );
   }
 }
+
