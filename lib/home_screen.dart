@@ -5,6 +5,7 @@ class HomeScreen extends StatefulWidget {
 
   final String userName;
   final String profilePictureUrl;
+  
 
   const HomeScreen({
     Key? key,

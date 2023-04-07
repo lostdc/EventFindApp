@@ -48,16 +48,34 @@ class _MapScreenState extends State<MapScreeen> {
 
 List<Marker> _buildMarkers(List<MapMarker> markers) {
   return markers.map((marker) {
-    String newImagePath = marker.imagen!.replaceAll(
-        'assets/eventos/30-03-2023/images/eventos_4_iv_region_de_coquimbo/',
-        'event_find/eventos/passline/imagenes/eventos_4_iv_region_de_coquimbo/');
+    //String newImagePath = marker.imagen!.replaceAll(
+    //    'assets/eventos/05-04-2023/images/eventos_4_iv_region_de_coquimbo/',
+    //    'event_find/eventos/passline/imagenes/eventos_4_iv_region_de_coquimbo/');
+    String newImagePath;
+    if(marker.logo == 'logo_passline.png'){
+      newImagePath = marker.imagen!.replaceAll(
+          RegExp(r'assets/eventos/.+/images/'),
+          'event_find/eventos/passline/imagenes/');
+    }else{
+      newImagePath = marker.imagen!.replaceAll(
+          RegExp(r'assets/eventos/.+/images/'),
+          'event_find/eventos/ticketplus/imagenes/');
+    }
+
+
+    String imageUrl;
+    if (newImagePath.isNotEmpty) {
+      imageUrl =
+          'https://firebasestorage.googleapis.com/v0/b/eventfind-ad0e3.appspot.com/o/${Uri.encodeComponent(newImagePath)}?alt=media';
+    } else {
+      imageUrl =
+          'https://via.placeholder.com/500.jpg?text=Image+missing';
+    }
     
-    String imageUrl =
-        'https://firebasestorage.googleapis.com/v0/b/eventfind-ad0e3.appspot.com/o/${Uri.encodeComponent(newImagePath)}?alt=media';
 
     String titulo = marker.titulo ?? '';
     String fecha = marker.fecha ?? '';
-    String tituloConFecha = titulo + ' - ' + fecha;
+    String tituloConFecha = '$titulo - $fecha';
 
     return Marker(
       point: marker.location!,
@@ -140,7 +158,7 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
                   ),
                   child: Center(
                     child: Image.asset(
-                      'assets/logo_passline.png', // Reemplaza esto con la ruta de tu logo en la carpeta assets
+                      'assets/${marker.logo}', // Reemplaza esto con la ruta de tu logo en la carpeta assets
                       width: 65, // Aumentamos el tamaño del logo aquí
                       height: 65, // Aumentamos el tamaño del logo aquí
                     ),
@@ -189,7 +207,7 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FlutterMap(
-        options: MapOptions(center: myPosition, minZoom: 5, maxZoom: 25, zoom: 18),
+        options: MapOptions(center: myPosition, minZoom: 12, maxZoom: 20, zoom: 18),
         children: [
           TileLayer(
             urlTemplate:

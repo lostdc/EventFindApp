@@ -78,9 +78,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
-    - assets/eventos/
+    #- assets/eventos/
     # assets/data.json
-    - assets/eventos/30-03-2023/
+    #- assets/eventos/30-03-2023/
     # assets/eventos/30-03-2023/images/
     #- assets/eventos/30-03-2023/images/eventos_4_iv_region_de_coquimbo/
       
