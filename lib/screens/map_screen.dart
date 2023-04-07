@@ -25,6 +25,11 @@ class _MapScreenState extends State<MapScreeen> {
   StreamSubscription<LocationData>? _locationSubscription;
   List<Marker> _markers = [];
 
+  // Agrega el Completer para manejar el estado de la construcción del mapa
+  final Completer<void> _mapCompleter = Completer<void>();
+  final MapController   mapController = MapController();
+
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +42,10 @@ class _MapScreenState extends State<MapScreeen> {
     });
 
     _loadMarkers();
+  }
+
+  void _moveToLatLng(LatLng newLatLng) {
+    mapController.move(newLatLng, mapController.zoom);
   }
 
   Future<void> _loadMarkers() async {
@@ -198,70 +207,102 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
         return;
       }
     }
-    locationData = await locationController.getLocation();
-    setState(() {
-      myPosition = LatLng(locationData.latitude!, locationData.longitude!);
-    });
+      locationData = await locationController.getLocation();
+      setState(() {
+        myPosition = LatLng(locationData.latitude!, locationData.longitude!);
+      });
+
+      // Completa el _mapCompleter una vez que se haya movido el mapa
+      if (!_mapCompleter.isCompleted) {
+        _mapCompleter.complete();        
+      }
   }
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FlutterMap(
-        options: MapOptions(center: myPosition, minZoom: 12, maxZoom: 20, zoom: 18),
-        children: [
-          TileLayer(
-            urlTemplate:
-                'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
-            additionalOptions: const {
-              'accessToken': mapboxAccessToken,
-              'id': 'mapbox/streets-v12'
-            },
-          ),
-          MarkerLayer(
-            markers: [
-              Marker(
-                point: myPosition,
-                builder: (context) {
-                  return GestureDetector(
-                    onTap: () {
-                      // Aquí se puede agregar la acción al hacer clic en el marcador azul
-                    },
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        //const Icon(
-                        //  Icons.person_pin,
-                        //  color: Colors.blueAccent,
-                        //  size: 40,
-                        //),
-                        Transform.translate(
-                          offset: const Offset(0, 0),
-                          child: ClipOval(
-                            child: Container(
-                              width: 80, // Aumenta el tamaño de la foto de perfil aquí
-                              height: 80, // Aumenta el tamaño de la foto de perfil aquí
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
+      body: FutureBuilder(
+        future: _mapCompleter.future,
+        builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return FlutterMap(
+              options: MapOptions(center: myPosition, minZoom: 12, maxZoom: 20, zoom: 18),
+              mapController: mapController, // Agrega el controlador del mapa aquí
+              children: [
+                TileLayer(
+                  urlTemplate:
+                      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                  additionalOptions: const {
+                    'accessToken': mapboxAccessToken,
+                    'id': 'mapbox/streets-v12'
+                  },
+                ),
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: myPosition,
+                      builder: (context) {
+                        return GestureDetector(
+                          onTap: () {
+                            // Aquí se puede agregar la acción al hacer clic en el marcador azul
+                          },
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              //const Icon(
+                              //  Icons.person_pin,
+                              //  color: Colors.blueAccent,
+                              //  size: 40,
+                              //),
+                              Transform.translate(
+                                offset: const Offset(0, 0),
+                                child: ClipOval(
+                                  child: Container(
+                                    width: 80, // Aumenta el tamaño de la foto de perfil aquí
+                                    height: 80, // Aumenta el tamaño de la foto de perfil aquí
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white,
+                                    ),
+                                    child: Image.network(
+                                      widget.profilePictureUrl,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
                               ),
-                              child: Image.network(
-                                widget.profilePictureUrl,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                            ],
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-              ..._markers,
-            ],
-          )
-        ],
+                    ..._markers,
+                  ],
+                ),
+              ],
+            );
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
       ),
+      // Opcional: Agrega un botón flotante para mover el mapa a otra posición
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Establece las coordenadas de latitud y longitud deseadas
+          _moveToLatLng(myPosition);
+        },
+        child: const Icon(Icons.location_on),
+      ),
+
     );
   }
+
+
 }
+
+
+
+  
+
 
