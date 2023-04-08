@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
-import 'auth.dart'; // Importar el archivo de autenticación
+import '../services/auth.dart'; // Importar el archivo de autenticación
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

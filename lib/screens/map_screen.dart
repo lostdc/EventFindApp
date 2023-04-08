@@ -6,12 +6,20 @@ import 'dart:async';
 import 'package:event_find/models/map_marker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:event_find/repositories/map_marker_repository.dart';
+import 'package:event_find/services/firebase_storage_service.dart';
+
+
+final firebaseStorageService  = FirebaseStorageService();
+final mapMarkerRepository     = MapMarkerRepository(firebaseStorageService);
+
 
 const mapboxAccessToken = 'pk.eyJ1IjoiamRvbWluZ3VlejI1IiwiYSI6ImNsZnUzOG5odzA2dWozZG80eWg3dDJsYWoifQ.Yw-vXDw2_voeUEBga0HiZA';
 
 LatLng myPosition = LatLng(-29.952047, -71.3502365);
 
 class MapScreeen extends StatefulWidget {
+
 
   final String profilePictureUrl;
   const MapScreeen({Key? key, required this.profilePictureUrl}) : super(key: key);
@@ -21,14 +29,13 @@ class MapScreeen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreeen> {
+  
   final Location locationController = Location();
   StreamSubscription<LocationData>? _locationSubscription;
   List<Marker> _markers = [];
-
   // Agrega el Completer para manejar el estado de la construcción del mapa
   final Completer<void> _mapCompleter = Completer<void>();
   final MapController   mapController = MapController();
-
 
   @override
   void initState() {
@@ -49,7 +56,7 @@ class _MapScreenState extends State<MapScreeen> {
   }
 
   Future<void> _loadMarkers() async {
-    List<MapMarker> mapMarkers = await fetchMapMarkers();
+    List<MapMarker> mapMarkers = await mapMarkerRepository.fetchMapMarkers();
     setState(() {
       _markers = _buildMarkers(mapMarkers);
     });
@@ -57,9 +64,6 @@ class _MapScreenState extends State<MapScreeen> {
 
 List<Marker> _buildMarkers(List<MapMarker> markers) {
   return markers.map((marker) {
-    //String newImagePath = marker.imagen!.replaceAll(
-    //    'assets/eventos/05-04-2023/images/eventos_4_iv_region_de_coquimbo/',
-    //    'event_find/eventos/passline/imagenes/eventos_4_iv_region_de_coquimbo/');
     String newImagePath;
     if(marker.logo == 'logo_passline.png'){
       newImagePath = marker.imagen!.replaceAll(

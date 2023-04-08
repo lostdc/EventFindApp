@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/map_screen.dart';
+import 'map_screen.dart';
 
 class HomeScreen extends StatefulWidget {
 
