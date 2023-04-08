@@ -2,10 +2,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'config/firebase_options.dart';
 import 'screens/login_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:event_find/bloc/home_bloc.dart';
 
 void main() {
+
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => HomeBloc())
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -19,7 +29,7 @@ class MyApp extends StatelessWidget {
       builder: (context, AsyncSnapshot<FirebaseApp> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return MaterialApp(
-            title: 'Mi aplicación',
+            title: 'Event Find',
             theme: ThemeData(
               primarySwatch: Colors.blue,
             ),

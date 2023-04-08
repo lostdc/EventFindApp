@@ -19,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
     String profilePictureUrl = userData['profilePictureUrl'];
 
     if (userName.isNotEmpty) {
+      // ignore: use_build_context_synchronously
       Navigator.push(
         context,
         MaterialPageRoute(

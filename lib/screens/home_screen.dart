@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'map_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:event_find/bloc/home_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -20,47 +22,50 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
+  //aqui cuando presionan algun boton del menu inferior home cambia el valor del indice
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    BlocProvider.of<HomeBloc>(context).add(ChangeSelectedIndex(index));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('${widget.userName}'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            //MapScreeen(profilePictureUrl: widget.profilePictureUrl),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Image.asset(
-                  'assets/logo_eventfind.png',
-                  scale: 3.5,
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text((state.selectedIndex).toString()),
+          ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                //MapScreeen(profilePictureUrl: widget.profilePictureUrl),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: Image.asset(
+                      'assets/logo_eventfind.png',
+                      scale: 3.5,
+                    ),
+                  ),
                 ),
-              ),
+                Expanded(
+                  child: MapScreeen(profilePictureUrl: widget.profilePictureUrl),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: _buildBottomNavigationBar(state),
+                ),
+              ],
             ),
-            Expanded(
-              child: MapScreeen(profilePictureUrl: widget.profilePictureUrl),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: _buildBottomNavigationBar(),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildBottomNavigationBar() {
+  Widget _buildBottomNavigationBar(HomeState state) {
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
@@ -84,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Colors.yellow,
         ),
       ],
-      currentIndex: _selectedIndex,
+      currentIndex: state.selectedIndex,
       onTap: _onItemTapped,
     );
   }
