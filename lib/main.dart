@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
       builder: (context, AsyncSnapshot<FirebaseApp> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'Event Find',
             theme: ThemeData(
               primarySwatch: Colors.blue,
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
         }
 
         return const MaterialApp(
+          debugShowCheckedModeBanner: false,
           home: Scaffold(
             body: Center(child: CircularProgressIndicator()),
           ),

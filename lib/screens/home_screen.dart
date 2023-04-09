@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 scale: 3.5,
               ),
               Expanded(
-                child: MapScreeen(profilePictureUrl: widget.profilePictureUrl),
+                child: InteractiveMapScreen(profilePictureUrl: widget.profilePictureUrl),
               )
             ],
           ),
