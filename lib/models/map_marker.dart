@@ -60,7 +60,7 @@ class MapMarker {
 
 
 
-void _showOverlay(BuildContext context, String tituloConFecha, String? detalleEvento, String? eventoUrl, String imageUrl) {
+void _showOverlay(BuildContext context, String tituloConFecha, String? detalleEvento, String? eventoUrl, String imageUrl, PageController pageController, int index, List<MapMarker> mapMarkers) {
   OverlayState overlayState = Overlay.of(context)!;
 
   // Elimina el OverlayEntry actual antes de agregar uno nuevo
@@ -75,17 +75,43 @@ void _showOverlay(BuildContext context, String tituloConFecha, String? detalleEv
         color: Colors.transparent,
         child: Container(
           constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.4,
+            maxHeight: MediaQuery.of(context).size.height * 0.3,
           ),
           width: MediaQuery.of(context).size.width,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: SingleChildScrollView(
-              child: MarkerInfoCardButton(
-                tituloConFecha: tituloConFecha,
-                detalleEvento: detalleEvento,
-                eventoUrl: eventoUrl,
-                imageUrl: imageUrl,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.3,
+              child: PageView(
+                controller: pageController,
+                children: mapMarkers.map((marker) {
+                  String newImagePath;
+                  if (marker.logo == 'logo_passline.png') {
+                  newImagePath = marker.imagen!.replaceAll(
+                      RegExp(r'assets/eventos/.+/images/'),
+                      'event_find/eventos/passline/imagenes/',
+                    );
+                  } else {
+                    newImagePath = marker.imagen!.replaceAll(
+                      RegExp(r'assets/eventos/.+/images/'),
+                      'event_find/eventos/ticketplus/imagenes/',
+                    );
+                  }
+                  String imageUrl;
+                  if (newImagePath.isNotEmpty) {
+                    imageUrl =
+                        'https://firebasestorage.googleapis.com/v0/b/eventfind-ad0e3.appspot.com/o/${Uri.encodeComponent(newImagePath)}?alt=media';
+                  } else {
+                    imageUrl =
+                        'https://via.placeholder.com/500.jpg?text=Image+missing';
+                  }
+                  return MarkerInfoCardButton(
+                    tituloConFecha: '${marker.titulo} ${marker.fecha}',
+                    detalleEvento: marker.detalleEvento,
+                    eventoUrl: marker.eventoUrl,
+                    imageUrl: imageUrl,
+                  );
+                }).toList(),
               ),
             ),
           ),
@@ -94,16 +120,23 @@ void _showOverlay(BuildContext context, String tituloConFecha, String? detalleEv
     );
   });
 
-  // Guarda el nuevo OverlayEntry como el actual
+// Guarda el nuevo OverlayEntry como el actual
   MapMarker.currentOverlayEntry = overlayEntry;
   overlayState.insert(overlayEntry);
+  // Asegurarse de que el OverlayEntry se muestre antes de llamar a jumpToPage
+  WidgetsBinding.instance!.addPostFrameCallback((_) {
+    pageController.jumpToPage(index);
+  });
 }
 
-
-
   //estro me lo traje de la screen map_screen.dart
-  static List<Marker> buildMarkers(List<MapMarker> markers, void Function(LatLng) moveToLatLngCallback) {
-    return markers.map((marker) {
+  static List<Marker> buildMarkers(List<MapMarker> markers, void Function(LatLng) moveToLatLngCallback, PageController pageController) {
+    //return markers.map((marker) {
+    //  String newImagePath;
+
+    return markers.asMap().entries.map((entry) {
+      int index = entry.key;
+      MapMarker marker = entry.value;
       String newImagePath;
 
       if (marker.logo == 'logo_passline.png') {
@@ -136,7 +169,18 @@ void _showOverlay(BuildContext context, String tituloConFecha, String? detalleEv
               if (marker.location != null) {
                 moveToLatLngCallback(marker.location!); // Asegúrate de utilizar el callback aquí
               }
-              marker._showOverlay(context, tituloConFecha, marker.detalleEvento, marker.eventoUrl, imageUrl);
+               PageController pageController = PageController(initialPage: index);
+               marker._showOverlay(
+                context,
+                tituloConFecha,
+                marker.detalleEvento,
+                marker.eventoUrl,
+                imageUrl,
+                pageController,
+                index,
+                markers,
+              );
+              //marker._showOverlay(context, tituloConFecha, marker.detalleEvento, marker.eventoUrl, imageUrl, pageController, index);
             },
             child: Stack(
               alignment: Alignment.center,

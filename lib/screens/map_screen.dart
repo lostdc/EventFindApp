@@ -23,13 +23,13 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
   late final FirebaseStorageService  firebaseStorageService;
   late final MapMarkerRepository mapMarkerRepository;
   late PageController pageController; // Añadir un PageController
-  
   final Location locationController = Location();
   StreamSubscription<LocationData>? _locationSubscription;
   List<Marker> _markers = [];
   // Agrega el Completer para manejar el estado de la construcción del mapa
   final Completer<void> _mapCompleter = Completer<void>();
   final MapController   mapController = MapController();
+  List<MapMarker> _mapMarkers = [];
 
   @override
   void initState() {
@@ -55,7 +55,8 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
   _loadMarkers() async {
     List<MapMarker> mapMarkers = await mapMarkerRepository.fetchMapMarkers();
     setState(() {
-      _markers = MapMarker.buildMarkers(mapMarkers,_moveToLatLng); // Usa el método estático aquí
+      _markers = MapMarker.buildMarkers(mapMarkers,_moveToLatLng, pageController); // Usa el método estático aquí
+      _mapMarkers = mapMarkers; // Actualiza la lista de MapMarker aquí
     });
   }
 
