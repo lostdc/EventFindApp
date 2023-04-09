@@ -35,34 +35,30 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Image.asset(
-                  'assets/logo_eventfind.png',
-                  width: 250, // Ajusta el ancho según tus necesidades
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children:[
+              Image.asset(
+                'assets/logo_eventfind.png',
+                width: 250, // Ajusta el ancho según tus necesidades
+              ),
+              const SizedBox(height: 50),
+              ElevatedButton.icon(
+                onPressed: _handleLoginButton, // Llamar a la función _handleLoginButton
+                icon: const Icon(Icons.facebook, color: Colors.white),
+                label: const Text('Iniciar sesión con Facebook'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1877F2), // Color del botón de Facebook
+                  textStyle: const TextStyle(fontSize: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
-
-                const SizedBox(height: 50),
-                ElevatedButton.icon(
-                  onPressed: _handleLoginButton, // Llamar a la función _handleLoginButton
-                  icon: const Icon(Icons.facebook, color: Colors.white),
-                  label: const Text('Iniciar sesión con Facebook'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1877F2), // Color del botón de Facebook
-                    textStyle: const TextStyle(fontSize: 16),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-                
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

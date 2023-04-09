@@ -6,7 +6,6 @@ abstract class HomeEvent {}
 
 class ChangeSelectedIndex extends HomeEvent {
   final int index;
-
   ChangeSelectedIndex(this.index);
 }
 
@@ -32,7 +31,5 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(HomeSelectedIndexChanged(event.index));
     });
   }
-
-  
   Stream<HomeState> mapEventToState(HomeEvent event) async* {}
 }

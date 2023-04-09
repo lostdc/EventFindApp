@@ -4,6 +4,9 @@ import 'config/firebase_options.dart';
 import 'screens/login_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:event_find/bloc/home_bloc.dart';
+import 'package:event_find/bloc/map_bloc.dart';
+import 'package:event_find/services/firebase_storage_service.dart';
+import 'package:event_find/repositories/map_marker_repository.dart';
 
 void main() {
 
@@ -11,7 +14,13 @@ void main() {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => HomeBloc())
+        BlocProvider(create: (context) => HomeBloc()),
+        BlocProvider(
+          create: (context) => MapBloc(
+            firebaseStorageService: FirebaseStorageService(),
+            mapMarkerRepository: MapMarkerRepository(FirebaseStorageService()),
+          ),
+        ),
       ],
       child: MyApp(),
     ),

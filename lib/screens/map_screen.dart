@@ -109,7 +109,7 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
                           imageUrl: imageUrl,
                           placeholder: (context, url) =>
                               const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) => Icon(Icons.error),
+                          errorWidget: (context, url, error) => const Icon(Icons.error),
                         ),
                         const SizedBox(height: 10),
                         Text(marker.detalleEvento ?? ''),
@@ -253,11 +253,6 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
-                              //const Icon(
-                              //  Icons.person_pin,
-                              //  color: Colors.blueAccent,
-                              //  size: 40,
-                              //),
                               Transform.translate(
                                 offset: const Offset(0, 0),
                                 child: ClipOval(
@@ -290,7 +285,6 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
           }
         },
       ),
-      // Opcional: Agrega un botón flotante para mover el mapa a otra posición
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Establece las coordenadas de latitud y longitud deseadas
@@ -298,11 +292,8 @@ List<Marker> _buildMarkers(List<MapMarker> markers) {
         },
         child: const Icon(Icons.location_on),
       ),
-
     );
   }
-
-
 }
 
 

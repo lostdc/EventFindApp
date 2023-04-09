@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'map_screen.dart';
+import 'package:event_find/screens/map_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:event_find/bloc/home_bloc.dart';
 
@@ -8,7 +8,6 @@ class HomeScreen extends StatefulWidget {
   final String userName;
   final String profilePictureUrl;
   
-
   const HomeScreen({
     Key? key,
     required this.userName,
@@ -20,46 +19,39 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
 
   //aqui cuando presionan algun boton del menu inferior home cambia el valor del indice
   void _onItemTapped(int index) {
     BlocProvider.of<HomeBloc>(context).add(ChangeSelectedIndex(index));
   }
 
+
+
+                
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(
-            title: Text((state.selectedIndex).toString()),
+          //appBar: AppBar(
+          //  title: Text((state.selectedIndex).toString()),
+          //),
+          body: Column(
+            children: [
+              const Padding(
+                    padding: EdgeInsets.only(top: 35)
+              ),
+              Image.asset(
+                'assets/logo_eventfind.png',
+                scale: 3.5,
+              ),
+              Expanded(
+                child: MapScreeen(profilePictureUrl: widget.profilePictureUrl),
+              )
+            ],
           ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                //MapScreeen(profilePictureUrl: widget.profilePictureUrl),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Image.asset(
-                      'assets/logo_eventfind.png',
-                      scale: 3.5,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: MapScreeen(profilePictureUrl: widget.profilePictureUrl),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: _buildBottomNavigationBar(state),
-                ),
-              ],
-            ),
-          ),
+          bottomNavigationBar: _buildBottomNavigationBar(state),
         );
       },
     );
@@ -71,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
-          backgroundColor: Color.fromARGB(255, 70, 43, 226),
+          backgroundColor: Color.fromARGB(255, 0, 60, 255),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.search),
@@ -86,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
         BottomNavigationBarItem(
           icon: Icon(Icons.account_circle),
           label: 'Profile',
-          backgroundColor: Colors.yellow,
+          backgroundColor: Color.fromARGB(255, 251, 130, 0),
         ),
       ],
       currentIndex: state.selectedIndex,
