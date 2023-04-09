@@ -60,7 +60,7 @@ class MapMarker {
 
 
 
-void _showOverlay(BuildContext context, String tituloConFecha, String? detalleEvento, String? eventoUrl, String imageUrl, PageController pageController, int index, List<MapMarker> mapMarkers) {
+void _showOverlay(BuildContext context, String tituloConFecha, String? detalleEvento, String? eventoUrl, String imageUrl, PageController pageController, int index, List<MapMarker> mapMarkers, Function(int) onPageChanged) {
   OverlayState overlayState = Overlay.of(context)!;
 
   // Elimina el OverlayEntry actual antes de agregar uno nuevo
@@ -84,6 +84,7 @@ void _showOverlay(BuildContext context, String tituloConFecha, String? detalleEv
               height: MediaQuery.of(context).size.height * 0.3,
               child: PageView(
                 controller: pageController,
+                onPageChanged: onPageChanged, // Añade el callback aquí
                 children: mapMarkers.map((marker) {
                   String newImagePath;
                   if (marker.logo == 'logo_passline.png') {
@@ -179,6 +180,12 @@ void _showOverlay(BuildContext context, String tituloConFecha, String? detalleEv
                 pageController,
                 index,
                 markers,
+                (int markerIndex) {
+                  if (markerIndex >= 0 && markerIndex < markers.length) {
+                    MapMarker marker = markers[markerIndex];
+                    moveToLatLngCallback(marker.location!);
+                  }
+                }
               );
               //marker._showOverlay(context, tituloConFecha, marker.detalleEvento, marker.eventoUrl, imageUrl, pageController, index);
             },
