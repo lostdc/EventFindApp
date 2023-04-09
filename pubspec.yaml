@@ -50,6 +50,7 @@ dependencies:
   flutterfire_cli: "^0.2.7"
   cached_network_image: ^3.2.0
   flutter_bloc: ^8.1.2
+  overlay_support: ^1.0.3
 
 
   

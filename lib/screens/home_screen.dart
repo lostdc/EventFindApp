@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:event_find/screens/map_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:event_find/bloc/home_bloc.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class HomeScreen extends StatefulWidget {
 
@@ -34,22 +35,28 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         return Scaffold(
-          //appBar: AppBar(
-          //  title: Text((state.selectedIndex).toString()),
-          //),
-          body: Column(
-            children: [
-              const Padding(
-                    padding: EdgeInsets.only(top: 35)
-              ),
-              Image.asset(
-                'assets/logo_eventfind.png',
-                scale: 3.5,
-              ),
-              Expanded(
-                child: InteractiveMapScreen(profilePictureUrl: widget.profilePictureUrl),
-              )
-            ],
+          body: WillPopScope(
+            onWillPop: () async {
+              if (OverlaySupportEntry.of(context) != null) {
+                OverlaySupportEntry.of(context)!.dismiss();
+                return false;
+              }
+              return true;
+            },
+              child: Column(
+              children: [
+                const Padding(
+                      padding: EdgeInsets.only(top: 35)
+                ),
+                Image.asset(
+                  'assets/logo_eventfind.png',
+                  scale: 3.5,
+                ),
+                Expanded(
+                  child: InteractiveMapScreen(profilePictureUrl: widget.profilePictureUrl),
+                )
+              ],
+            ),
           ),
           bottomNavigationBar: _buildBottomNavigationBar(state),
         );

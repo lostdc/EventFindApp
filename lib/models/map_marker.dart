@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'package:event_find/utils/marker_info_card_button.dart';
+
 class MapMarker {
   final String? titulo;
   final String? fecha;
@@ -14,6 +17,8 @@ class MapMarker {
   final String? imagen;
   final String? eventoUrl;
   final LatLng? location;
+  static OverlayEntry? currentOverlayEntry;
+  final Function(LatLng)? onMarkerTap;
 
   MapMarker({
     required this.titulo,
@@ -26,6 +31,7 @@ class MapMarker {
     required this.imagen,
     required this.eventoUrl,
     required this.location,
+    this.onMarkerTap, 
   });
 
   factory MapMarker.fromJson(Map<String, dynamic> json) {
@@ -53,15 +59,58 @@ class MapMarker {
   }
 
 
+
+void _showOverlay(BuildContext context, String tituloConFecha, String? detalleEvento, String? eventoUrl, String imageUrl) {
+  OverlayState overlayState = Overlay.of(context)!;
+
+  // Elimina el OverlayEntry actual antes de agregar uno nuevo
+  if (MapMarker.currentOverlayEntry != null) {
+    MapMarker.currentOverlayEntry!.remove();
+  }
+
+  OverlayEntry overlayEntry = OverlayEntry(builder: (context) {
+    return Positioned(
+      bottom: 70,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.4,
+          ),
+          width: MediaQuery.of(context).size.width,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: SingleChildScrollView(
+              child: MarkerInfoCardButton(
+                tituloConFecha: tituloConFecha,
+                detalleEvento: detalleEvento,
+                eventoUrl: eventoUrl,
+                imageUrl: imageUrl,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  });
+
+  // Guarda el nuevo OverlayEntry como el actual
+  MapMarker.currentOverlayEntry = overlayEntry;
+  overlayState.insert(overlayEntry);
+}
+
+
+
   //estro me lo traje de la screen map_screen.dart
-  static List<Marker> buildMarkers(List<MapMarker> markers) {
+  static List<Marker> buildMarkers(List<MapMarker> markers, void Function(LatLng) moveToLatLngCallback) {
     return markers.map((marker) {
       String newImagePath;
-      if(marker.logo == 'logo_passline.png'){
+
+      if (marker.logo == 'logo_passline.png') {
         newImagePath = marker.imagen!.replaceAll(
             RegExp(r'assets/eventos/.+/images/'),
             'event_find/eventos/passline/imagenes/');
-      }else{
+      } else {
         newImagePath = marker.imagen!.replaceAll(
             RegExp(r'assets/eventos/.+/images/'),
             'event_find/eventos/ticketplus/imagenes/');
@@ -84,85 +133,40 @@ class MapMarker {
         builder: (context) {
           return GestureDetector(
             onTap: () {
-              // Aquí se muestra la información del marcador al hacer clic en él
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text(tituloConFecha),
-                    content: SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CachedNetworkImage(
-                            imageUrl: imageUrl,
-                            placeholder: (context, url) =>
-                                const CircularProgressIndicator(),
-                            errorWidget: (context, url, error) => const Icon(Icons.error),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(marker.detalleEvento ?? ''),
-                          const SizedBox(height: 10),
-                          GestureDetector(
-                            onTap: () async {
-                              if (await canLaunchUrl(Uri.parse(marker.eventoUrl ?? ''))) {
-                                await launchUrl(Uri.parse(marker.eventoUrl ?? ''));
-                              } else {
-                                throw 'Could not launch ${marker.eventoUrl}';
-                              }
-                            },
-                            child: Text(
-                              marker.eventoUrl ?? '',
-                              style: const TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Cerrar'),
-                      ),
-                    ],
-                  );
-                },
-              );
+              if (marker.location != null) {
+                moveToLatLngCallback(marker.location!); // Asegúrate de utilizar el callback aquí
+              }
+              marker._showOverlay(context, tituloConFecha, marker.detalleEvento, marker.eventoUrl, imageUrl);
             },
             child: Stack(
               alignment: Alignment.center,
               children: [
                 Transform.translate(
-                  offset: const Offset(-15, -8), // Ajusta los valores para mover el marcador en los ejes X e Y
+                  offset: const Offset(-15, -8),
                   child: const SizedBox(
-                    width: 100, // Ajusta el ancho del área de toque aquí
-                    height: 100, // Ajusta el alto del área de toque aquí
+                    width: 100,
+                    height: 100,
                     child: Icon(
                       Icons.location_on,
                       color: Colors.red,
-                      size: 60, // Aumentamos el tamaño del ícono aquí
+                      size: 60,
                     ),
                   ),
                 ),
                 Transform.translate(
-                  offset: const Offset(0, 0), // Ajustamos el centrado del círculo aquí
+                  offset: const Offset(0, 0),
                   child: Container(
-                    width: 100, // Aumentamos el tamaño del círculo aquí
-                    height: 100, // Aumentamos el tamaño del círculo aquí
+                    width: 100,
+                    height: 100,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.white,
                     ),
                     child: Center(
                       child: Image.asset(
-                        'assets/${marker.logo}', // Reemplaza esto con la ruta de tu logo en la carpeta assets
-                        width: 65, // Aumentamos el tamaño del logo aquí
-                        height: 65, // Aumentamos el tamaño del logo aquí
+                        'assets/${marker.logo}',
+                        width: 65,
+                        height: 65,
                       ),
                     ),
                   ),

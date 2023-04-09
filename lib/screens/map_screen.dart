@@ -8,7 +8,7 @@ import 'package:event_find/models/map_marker.dart';
 import 'package:event_find/repositories/map_marker_repository.dart';
 import 'package:event_find/services/firebase_storage_service.dart';
 import 'package:event_find/config/config.dart';
-import 'package:event_find/utils/location_utils.dart';
+//import 'package:event_find/utils/location_utils.dart';
 
 LatLng myPosition = LatLng(0,0);
 class InteractiveMapScreen extends StatefulWidget {
@@ -22,6 +22,7 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
 
   late final FirebaseStorageService  firebaseStorageService;
   late final MapMarkerRepository mapMarkerRepository;
+  late PageController pageController; // Añadir un PageController
   
   final Location locationController = Location();
   StreamSubscription<LocationData>? _locationSubscription;
@@ -35,6 +36,9 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
     super.initState();
     firebaseStorageService  = FirebaseStorageService();
     mapMarkerRepository     = MapMarkerRepository(firebaseStorageService);
+    pageController          = PageController(); // Inicializar el PageController
+
+
     _requestLocationPermissionAndGetLocation();
     _locationSubscription = locationController.onLocationChanged.listen((LocationData currentLocation) {
     setState(() {
@@ -51,7 +55,7 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
   _loadMarkers() async {
     List<MapMarker> mapMarkers = await mapMarkerRepository.fetchMapMarkers();
     setState(() {
-      _markers = MapMarker.buildMarkers(mapMarkers); // Usa el método estático aquí
+      _markers = MapMarker.buildMarkers(mapMarkers,_moveToLatLng); // Usa el método estático aquí
     });
   }
 
@@ -94,12 +98,13 @@ class _InteractiveMapScreenState extends State<InteractiveMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       body: FutureBuilder(
         future: _mapCompleter.future,
         builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return FlutterMap(
-              options: MapOptions(center: myPosition, minZoom: 12, maxZoom: 20, zoom: 18),
+              options: MapOptions(center: myPosition, minZoom: 12, maxZoom: 20, zoom: 12),
               mapController: mapController, // Agrega el controlador del mapa aquí
               children: [
                 TileLayer(

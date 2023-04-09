@@ -7,6 +7,7 @@ import 'package:event_find/bloc/home_bloc.dart';
 import 'package:event_find/bloc/map_bloc.dart';
 import 'package:event_find/services/firebase_storage_service.dart';
 import 'package:event_find/repositories/map_marker_repository.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 void main() {
 
@@ -37,13 +38,15 @@ class MyApp extends StatelessWidget {
       future: _initialization,
       builder: (context, AsyncSnapshot<FirebaseApp> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'Event Find',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: const LoginScreen(),
+          return OverlaySupport(
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Event Find',
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+              ),
+              home: const LoginScreen(),
+            )
           );
         }
 
