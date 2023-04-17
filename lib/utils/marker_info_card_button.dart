@@ -61,10 +61,11 @@ class MarkerInfoCardButton extends StatelessWidget {
                 GestureDetector(
                   onTap: () async {
                     // ignore: deprecated_member_use
-                    if (await canLaunch(eventoUrl)) {
-                      await launchUrl(Uri.parse(eventoUrl));
+                    Uri? url = Uri.tryParse(eventoUrl);
+                    if (url != null) {
+                      await launch(url.toString());
                     } else {
-                      throw 'Could not launch $eventoUrl';
+                      throw 'Invalid URL: $eventoUrl';
                     }
                   },
                   child: Padding(
